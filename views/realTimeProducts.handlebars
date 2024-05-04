@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Products</title>
+</head>
+<body>
+    <h1>Listado de Productos en Tiempo Real</h1>
+    <ul>
+        {{#each products}}
+            <li>{{this}}</li>
+        {{/each}}
+    </ul>
+
+    <!-- Formulario para agregar un nuevo producto -->
+    <form id="productForm">
+        <input type="text" id="productName" placeholder="Nombre del producto">
+        <button type="submit">Agregar Producto</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        // Escuchar el evento 'newProduct' para actualizar la lista de productos
+        socket.on('newProduct', function(product) {
+            var productList = document.querySelector('ul');
+            var listItem = document.createElement('li');
+            listItem.textContent = product;
+            productList.appendChild(listItem);
+        });
+
+        // Escuchar el evento 'deleteProduct' para actualizar la lista de productos
+        socket.on('deleteProduct', function(product) {
+            var productList = document.querySelector('ul');
+            var items = productList.getElementsByTagName('li');
+            for (var i = 0; i < items.length; i++) {
+                if (items[i].textContent === product) {
+                    items[i].parentNode.removeChild(items[i]);
+                    break;
+                }
+            }
+        });
+
+        // Enviar el nombre del producto al servidor cuando se envíe el formulario
+        document.getElementById('productForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var productName = document.getElementById('productName').value;
+            socket.emit('addProduct', productName);
+            document.getElementById('productName').value = '';
+        });
+    </script>
+</body>
+</html>
