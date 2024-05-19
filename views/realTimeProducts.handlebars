@@ -31,18 +31,6 @@
             productList.appendChild(listItem);
         });
 
-        // Escuchar el evento 'deleteProduct' para actualizar la lista de productos
-        socket.on('deleteProduct', function(product) {
-            var productList = document.querySelector('ul');
-            var items = productList.getElementsByTagName('li');
-            for (var i = 0; i < items.length; i++) {
-                if (items[i].textContent === product) {
-                    items[i].parentNode.removeChild(items[i]);
-                    break;
-                }
-            }
-        });
-
         // Enviar el nombre del producto al servidor cuando se envíe el formulario
         document.getElementById('productForm').addEventListener('submit', function(event) {
             event.preventDefault();

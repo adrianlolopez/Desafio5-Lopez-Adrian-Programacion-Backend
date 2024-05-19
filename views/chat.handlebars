@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+</head>
+<body>
+    <h1>Chat</h1>
+    <div id="chat-box">
+        {{#each messages}}
+            <div class="message">
+                <strong>{{this.user}}:</strong> {{this.message}}
+            </div>
+        {{/each}}
+    </div>
+    <form id="message-form">
+        <input type="text" id="user" placeholder="Your name">
+        <input type="text" id="message" placeholder="Your message">
+        <button type="submit">Send</button>
+    </form>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        var socket = io();
+
+        document.getElementById('message-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var user = document.getElementById('user').value;
+            var message = document.getElementById('message').value;
+            socket.emit('chatMessage', { user: user, message: message });
+            document.getElementById('message').value = '';
+        });
+
+        socket.on('chatMessage', function(message) {
+            var chatBox = document.getElementById('chat-box');
+            var messageElement = document.createElement('div');
+            messageElement.className = 'message';
+            messageElement.innerHTML = '<strong>' + message.user + ':</strong> ' + message.message;
+            chatBox.appendChild(messageElement);
+        });
+    </script>
+</body>
+</html>
